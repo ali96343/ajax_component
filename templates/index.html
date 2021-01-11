@@ -1,0 +1,55 @@
+[[extend 'layout.html']]
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.edit_dog').click(function(event) {
+            var dog_id = this.id;
+            dog_id = dog_id.replace('edit_dog_', '');
+            var url = "[[=URL('edit_dog', vars=dict(id='dog_id_here'))]]";
+            url = url.replace('dog_id_here', dog_id);
+            Q.load_and_trap('GET', url, null, 'dog_component');
+
+            $("html").addClass("is-clipped");
+            $('#dog_modal').addClass("is-active");
+            event.preventDefault();
+        });
+    })
+
+    function close_modal() {
+        $("html").removeClass("is-clipped");
+        $('.modal').removeClass("is-active");
+
+        utils.load_and_trap('POST', "[[=URL('edit_dog', vars=dict(id='0'))]]", null, 'dog_component');
+    }
+</script>
+
+<div class="section">
+  <div class="vars">
+      <table class="table is-bordered is-hoverable">
+          <thead>
+            <th>
+                Name
+            </th>
+            <th>
+                Breed
+            </th>
+            <th class="is-narrow">
+                &nbsp;
+            </th>
+          </thead>
+      [[for dog in dogs:]]
+        <tr>
+            <td>[[=dog.name ]]</td>
+            <td>[[=dog.breed ]]</td>
+            <td class="is-narrow">
+                <a id="[[=f'edit_dog_{dog.id}']]" class="button edit_dog">Edit</a>
+            </td>
+        </tr>
+      [[pass]]
+      </table>
+  </div>
+</div>
+<div id="dog_modal" class="modal">
+    <ajax-component id="dog_component" url="[[=URL('edit_dog', vars=dict(id='0'))]]">
+        <img src="[[=URL('static', 'images/globe.gif')]]" alt="...loading...">
+    </ajax-component>
+</div>
